@@ -97,7 +97,7 @@ ETag 是資源的版本標示符，瀏覽器會將資源的 ETag 存儲在本地
     * 有沒有附帶 ETag 或 Last-Modified？
         
 * ② 快取命中但需要確認
-    如果資源雖然在快取中，但過期了又或者有 ```no-cache``` 標頭，瀏覽器會發出「條件請求」，例如使```If-None-Match``` 或 ```If-Modified-Since```。
+    如果資源雖然在快取中，但過期了又或者有 ```no-cache``` 標頭，瀏覽器會發出「條件請求」，例如```If-None-Match``` 或 ```If-Modified-Since```。
     伺服器會：
     * 回 ```304 Not Modified``` → 用快取的內容。
     * 回 ```200 OK``` 和新內容 → 更新快取。
