@@ -125,6 +125,7 @@ ETag 是資源的版本標示符，瀏覽器會將資源的 ETag 存儲在本地
 是說，怎麼知道元數據過期了沒？
     
 🧠 判斷快取是否過期的方式主要有兩種：
+
 ✅ 1. Cache-Control（最常見）
 ```https
 Cache-Control: max-age=3600
