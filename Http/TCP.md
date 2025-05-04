@@ -90,5 +90,219 @@ TCP 的狀態大致可分為3個階段：
 
 <b>🔧 安裝與操作步驟：</b>
 
-1. <b>下載與安裝 Wireshark</b>
-    *   官方網站：<a href="https://www.wireshark.org" style="text-decoration: none;">https://www.wireshark.org</a>
+<b>1. 下載與安裝 Wireshark</b>
+    官方網站：<a href="https://www.wireshark.org" style="text-decoration: none;">https://www.wireshark.org</a>
+    <div style="display: grid; font-weight: bolder;">
+        <details>
+            <summary style="cursor: pointer;">安裝步驟(圖示)</summary>
+            1. 進入 Wireshark 官網，選擇【 Download 】
+            <img style="width: 50%;" src="./img/TCP_1.png" title="1">
+            2. 選擇 Windows x64
+            <img style="width: 50%;" src="./img/TCP_2.png" title="2">
+            3. 點選 Wireshark.exe 開始安裝
+            <img style="width: 50%;" src="./img/TCP_3.png" title="3">
+            <img style="width: 50%;" src="./img/TCP_4.png" title="4">
+            <img style="width: 50%;" src="./img/TCP_5.png" title="5">
+            <img style="width: 50%;" src="./img/TCP_6.png" title="6">
+            <img style="width: 50%;" src="./img/TCP_7.png" title="7">
+            <img style="width: 50%;" src="./img/TCP_8.png" title="8">
+            <img style="width: 50%;" src="./img/TCP_9.png" title="9">
+            <img style="width: 50%;" src="./img/TCP_10.png" title="10">
+            <img style="width: 50%;" src="./img/TCP_11.png" title="11">
+            <img style="width: 50%;" src="./img/TCP_12.png" title="12">
+            <img style="width: 50%;" src="./img/TCP_13.png" title="13">
+            <img style="width: 50%;" src="./img/TCP_14.png" title="14">
+            <img style="width: 50%;" src="./img/TCP_15.png" title="15">
+            <img style="width: 50%;" src="./img/TCP_16.png" title="16">
+            <img style="width: 50%;" src="./img/TCP_17.png" title="17">
+            <img style="width: 50%;" src="./img/TCP_18.png" title="18">
+            <img style="width: 50%;" src="./img/TCP_19.png" title="19">
+            <img style="width: 50%;" src="./img/TCP_20.png" title="20">
+        </details>
+    </div>
+
+<b>2. 執行 Wireshark</b>
+*   以 <b>系統管理員身分</b> 啟動 (否則可能無法擷取網路介面)
+
+<b>3. 選擇你的網路介面卡(例如: Ethernet、 Wi-Fi)</b>
+*   滑鼠右鍵選擇`Start capture`
+<img style="width: 50%;" src="./img/TCP_21.png" title="21">
+*   開始抓取封包
+<img style="width: 50%;" src="./img/TCP_22.png" title="22">
+
+<hr>
+
+<b>✅ 方法二：使用 Windows 命令列工具 `netsh trace` (進階)</b>
+這是 Windows 內建的封包擷取工具，可以抓完整用Wireshark開啟分析
+
+<b>檢查 netsh：</b>
+<b>方法 1：通過命令提示符檢查</b>
+```cmd
+netsh
+如果顯示 netsh 的命令行介面，說明 netsh 已經安裝並可用
+Microsoft (R) Windows (R) Command Shell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+netsh>
+```
+
+<b>方法 2：查看系統環境變數</b>
+`netsh` 工具是 Windows系統自帶的，應位於 `C:\Windows\System32\netsh.exe`
+
+<b>方法 3：使用 PowerShell</b>
+```powershell
+Get-Command netsh
+```
+
+<hr>
+
+<b>netsh 封包擷取操作步驟：</b>
+
+<b>開始封包擷取</b>
+```powershell
+netsh trace start capture=yes tracefile=c:\temp\trace.etl
+```
+這是用來啟動 Windows 系統中的網路追蹤 (Network Trace) 功能，並將捕獲的網路數據保存到指定檔案中。
+*   `netsh`: 是 Windows 用於配置和管理網路設定的命令行工具
+*   `trace start`: 表示啟動網路追蹤功能
+*   `capture=yes`: 表示啟動數據包捕獲
+*   `tracefile=c:\temp\trace.etl`: 這指定了追蹤結果儲存的檔案位置，c:\temp\trace.etl 是儲存檔案的路徑和檔名。
+
+<b>⚠️ 如果要停止捕捉</b>
+```powershell
+netsh trace stop
+```
+
+<hr>
+
+<b>✅ 方法三：使用 Windows 命令列工具 `netstat`快速觀察 TCP 連線狀態 (不顯示握手細節)</b>
+
+`netstat` 會顯示當下的 <b>網路狀態快照</b>
+也就是目前的 <b>TCP/UDP連線、端口、路由表</b>等資料。
+它會在執行命令的那一刻顯示目前的網路狀態，而不是持續運行。
+
+<b>一次性顯示網路狀態</b>
+```bash
+netstat -an
+# 列出所有當前的網路連線、端口、狀態
+```
+<b>持續性顯示網路狀態 ( 每 5 秒更新一次 ) </b>
+```bash
+for /L %i in () do netstat -an & timeout /t 5
+# 可以用 Ctrl+C 停止
+```
+<b>觀察指定 IP 網路狀態</b>
+```bash
+netstat -an | find "192.168.1.10"
+```
+
+<b>觀察指定 IP 網路狀態 ( 每 5 秒更新一次 )</b>
+```bash
+for /L %i in () do netstat -an | find "192.168.1.10" & timeout /t 5
+```
+
+<b>觀察指定 port 網路狀態</b>
+```bash
+netstat -an | find ":80"
+```
+
+<b>觀察指定 port 網路狀態 ( 每 5 秒更新一次 )</b>
+```bash
+for /L %i in () do netstat -an | find ":80" & timeout /t 5
+```
+
+<hr>
+
+## Npcap
+Npcap 是一個 <b>網路封包捕捉驅動程式 ( packet capture driver )</b>
+它允許應用程式攔截和傳送網路封包，是在 Windows 上進行低階網路分析和監控的關鍵工具之一。
+它是由 <b>Nmap 項目</b>開發的，用來取代舊的 <b>WinPcap</b> 驅動程式，並解決其兼容性與安全性問題。
+
+### <b>🔧 Npcap 的用途</b>
+*   <b>網路封包擷取 ( Packet sniffing )</b>：例如使用 Wireshark來分析網路流量。
+*   <b>網路監控與安全分析</b>：用來入侵檢測系統、流量監控等工具。
+*   <b>開發網路工具</b>：例如 Nmap、Scapy、Npcap SDK 開發的自定應用。
+*   <b>發送自定義封包</b>：可模擬協定、測試防火牆規則等。
+
+<hr>
+
+### <b>🆚 Npcap vs WinPcap</b>
+| 功能比較           | Npcap                   | WinPcap                     |
+| -------------- | ----------------------- | --------------------------- |
+| 開發者            | Nmap Project            | Riverbed（舊為 CACE）           |
+| 系統支援           | Windows 7 \~ Windows 11 | Windows XP \~ Windows 7（過時） |
+| 兼容性            | 與 WinPcap 相容            | 舊版應用正常運行                    |
+| 支援 802.11 WiFi | ✅ 支援（需安裝特殊模式）           | ❌ 不支援                       |
+| 性能與安全性         | 更高、更安全                  | 已不再維護                       |
+
+<hr>
+
+### <b>⚙️ 安裝選項（常見）</b>
+*   <b>Install Npcap in WinPcap API-compatible Mode</b>：
+    允許舊程式繼續使用原本的 WinPcap API
+*   <b>Support loopback traffic ("Npcap Loopback Adapter")</b>：
+    可擷取畚箕傳送給自己的流量。
+*   <b>Support raw 802.11 traffic for wireless adapters</b>：
+    允許擷取 WiFi 封包 (不是所有網卡支援)。
+<img style="width: 50%;" src="./img/TCP_14.png" title="14">
+
+<hr>
+
+### <b>🔒 授權模式</b>
+*   <b>免費授權 ( Non-Commercial Use Only)</b>：
+    適用於個人學習、研究用途。
+*   <b>商業授權 ( Non-Commercial Use Only)</b>：
+    企業使用需購買授權。
+
+### 🧪 Npcap 驅動操作
+
+<b>✅ 測試是否安裝成功</b>
+
+```bash
+sc query npcap
+若顯示 STATE: RUNNING ，表示 Npcap 驅動成功運行中。
+```
+
+<b>✅ 查看 Npcap 狀態</b>
+
+```bash
+sc query npcap
+輸出會顯示 STATE
+```
+*   `RUNNING`：表示目前已啟動
+*   `STOPPED`：表示目前已停止
+
+<b>▶️ 手動啟動 Npcap</b>
+```cmd
+sc start npcap
+```
+
+<b>⏹️ 手動停止 Npcap</b>
+```cmd
+sc stop npcap
+```
+⚠️ 注意：如果有程式正在使用 Npcap（如 Wireshark、Nmap 等），你可能無法停止它，或者會失敗。
+
+<b>🔒 需管理員權限！</b>
+這些操作必須以「系統管理員身份執行」命令提示字元或 PowerShell。
+
+<b>🧠 延伸補充：Npcap Loopback Adapter</b>
+如果你看到「Npcap Loopback Adapter」裝置，它是一個虛擬的網卡，專門讓你擷取本機傳送給自己的流量。這個也可以透過裝置管理員啟用／停用。
+
+<hr>
+
+### 😱 Npcap 一直開著會不會耗CPU效能?
+一般情況下，<b>Npcap 常駐 (驅動一直啟用)幾乎不會耗用任何顯著的 CPU 或系統效能</b>。
+
+<b>✅ 為什麼 Npcap 不會持續耗用資源？</b>
+*   Npcap 是一個 <b>passive driver (被動驅動)</b>
+    它不會主動做事，只是等待應用程式 (如 Wireshark) 來「呼叫」它擷取封包。
+*   沒有任何程式使用 Npcap 時，它處於 <b>空閒狀態</b>，不會分析、紀錄或轉送任何封包。
+*   它不像某些防毒或網路監控工具會「持續掃描」，Npcap 完全不主動處理流量。
+
+<b>⚠️ 什麼情況下會造成資源使用？</b>
+*   <b>有程式啟動了封包擷取 (如 Wireshark、Nmap、 Snort等)</b>
+    * 在進行封包擷取時，Npcap就會開始將封包傳給程式處理，這可能佔用一點 CPU，尤其在高流量環境。
+
+*   <b>寫了自己使用 Npcap 的應用程式(使用libpcap/Npcap SDK)</b>
+    *   持續開啟介面抓封包，會產生系統負擔。
