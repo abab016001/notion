@@ -118,3 +118,73 @@ Connection: keep-alive
             7. <b>連線關閉 (可由任一方關閉)</b>
                 → 若客戶不再使用，可以主動發送 `Connection: close`；伺服器也可以因為閒置超時而斷開。
         *   <b>Host Header 支援虛擬主機</b>
+            「虛擬主機」( Virtual Hosting ) 是指在同一台伺服器 (同一個IP位址)上，透過「Host Header」來區分並同時提供多個網站的服務。這種技術的關鍵就是 HTTP 請求中的 `Host` 標頭 ( Host Header )。
+            
+            <b>✅ Host Header 的用途：</b>
+            當用戶透過瀏覽器發送 HTTP 請求時，請求中會包含這樣的資訊：
+            ```http
+            GET / HTTP/1.1
+            Host: www.example.com
+            ```
+            伺服器根據這個「Host」欄位來判斷用戶想訪問哪個網站，即使這些網站共用同一個IP也能正確回應對應的內容。
+
+            <b>🔍 使用情境：</b>
+            1. <b>共享 IP，提供多個網站</b>
+                *   例如：`www.site1.com`、`www.site2.com`都解析到`123.123.123.123`，但伺服器根據Host Header來分別處理。
+
+            2. <b>便於管理與部署</b>
+                *   可以用同一套伺服器架構部署多個網站，節省成本和資源。
+
+            3. <b>網頁代管 ( Web Hosting )公司常用</b>
+                *   提供客戶共用主機資源，使用Host Header技術來隔離網站。
+            
+            <b>🔧 類型區分：</b>
+            虛擬主機主要有兩種方式：
+            >   <b>類型 </b>IP-based
+                <b>說明 </b>每個網站使用不同IP，已較少見。
+            
+            >   <b>類型 </b>Name-based
+                <b>說明 </b>多個網站共用同一IP，依靠 Host Header 判斷 ( 最常見 )
+
+            <b>🌐 舉例：Apache 的設定（Name-based Virtual Host）：</b>
+            ```apache
+            <VirtualHost *:80>
+                ServerName www.site1.come
+                DocumentRoot /var/www/site1
+            </VirtualHost>
+
+             <VirtualHost *:80>
+                ServerName www.site2.come
+                DocumentRoot /var/www/site2
+            </VirtualHost>
+            ```
+            <b>🌐 舉例：Nginx 的設定：</b>
+            ```nginx
+            server {
+                listen 80;
+                server_name brand1.example.com;
+                root /var/www/brand1;
+            }
+
+            server {
+                listen 80;
+                server_name brand2.example.com;
+                root /var/www/brand2;
+            }
+            ```
+        <b>🌐 HTTP/2</b>
+        *   <b>發佈時間：</b>2015年
+        *   <b>✅ 特色: </b>
+            *   <b>多路複用 (Multiplexing) </b>  
+                * 在同一個 TCP 連線中，可以同時發送多個請求與回應，而不必像 HTTP/1.1 那樣一個一個排隊（避免了「隊頭阻塞」問題）。
+            *   <b>Header 壓縮 (HPACK) </b>  
+                * HTTP/1.1 的請求和回應頭部非常冗長，HTTP/2 引入 HPACK 算法來壓縮 headers，節省頻寬。
+            *   <b>伺服器推送 (Server Push) </b>  
+                * 伺服器可主動推送客戶端可能需要的資源 (如CSS、JS)
+            *   <b>二進制編碼</b>  
+                * 不再使用純文字格式（如 HTTP/1.1 的請求頭），HTTP 資料轉為二進位流，解析速度更快、更穩定。
+        *   <b>❌ 缺點: </b>
+            *   <b>基於 TCP 傳輸</b>，仍可能因為 TCP 層級的封包遺失而產生隊頭阻塞(所有流卡住)
+            *   <b>初期部署較複雜: </b>需要更新伺服器和瀏覽器支援。
+            *   <b>伺服器推送在實務上使用不多: </b>管理與效益評估困難。
+            *   <b>HTTPS 幾乎是必須: </b>雖非強制，但主流瀏覽器僅透過 HTTPS 啟用 HTTP/2。
