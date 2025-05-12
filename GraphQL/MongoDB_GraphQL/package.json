@@ -1,0 +1,17 @@
+{
+  "name": "mongodb_graphql",
+  "version": "1.0.0",
+  "description": "1. 安裝套件\r ```bash\r npm init -y\r npm install apollo-server mongoose graphql\r ```\r ## Apollo Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^3.13.0",
+    "graphql": "^16.11.0",
+    "mongoose": "^8.14.2"
+  }
+}
